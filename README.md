@@ -13,5 +13,5 @@ Once the application is uploaded, you can plug the LaFortuna any Laptop/PC USB p
 ## Attribution
 * FortunaOS -- Klaus-Peter Zauner, adapted by Steve Gunn
 * LUFA (USB framework) -- Dean Camera (https://github.com/abcminiuser/lufa)
-* Descriptors.h/c taken from LUFA demo projects
-* Build system based off fortuna-pass -- Cyanogenoid (https://github.com/Cyanogenoid/fortuna-pass)
+* Descriptors.h/c and understanding taken from LUFA demo projects
+* Build system based off fortuna-pass (and LUFA) -- Cyanogenoid (https://github.com/Cyanogenoid/fortuna-pass)
