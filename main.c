@@ -6,13 +6,11 @@
 #include <LUFA/Platform/Platform.h>
 #include "Descriptors.h"
 
-/** Buffer to hold the previously generated Mouse HID report, for comparison purposes inside the HID class driver. */
+// Previous HID report - so the driver can compare between this and the current
 static uint8_t PrevMouseHIDReportBuffer[sizeof(USB_MouseReport_Data_t)];
 
-/** LUFA HID Class driver interface configuration and state information. This structure is
- *  passed to all HID Class driver functions, so that multiple instances of the same class
- *  within a device can be differentiated from one another.
- */
+// Driver interface config - includes what ttype of device it is, the report
+// size, and the previous report buffer
 USB_ClassInfo_HID_Device_t Mouse_HID_Interface =
 {
 	.Config =
@@ -31,16 +29,20 @@ USB_ClassInfo_HID_Device_t Mouse_HID_Interface =
 
 
 int main(void) {
+	// Disable watchdog timer (not handled in this application)
 	MCUSR &= ~(1 << WDRF);
 	wdt_disable();
 
-	/* Disable clock division */
+	// Clock prescaling /1
 	clock_prescale_set(clock_div_1);
 
+	// Initialise FortunaOS
 	os_init();
 
+	// Enable interrupts (same as sei())
 	GlobalInterruptEnable();
 
+	// Initialise USB hardware
 	USB_Init();
 	for(;;) {
 		HID_Device_USBTask(&Mouse_HID_Interface);
@@ -67,16 +69,12 @@ void EVENT_USB_Device_StartOfFrame(void)
 	HID_Device_MillisecondElapsed(&Mouse_HID_Interface);
 }
 
-
-/** HID class driver callback function for the creation of HID reports to the host.
- *
- *  \param[in]     HIDInterfaceInfo  Pointer to the HID class interface configuration structure being referenced
- *  \param[in,out] ReportID    Report ID requested by the host if non-zero, otherwise callback should set to the generated report ID
- *  \param[in]     ReportType  Type of the report to create, either HID_REPORT_ITEM_In or HID_REPORT_ITEM_Feature
- *  \param[out]    ReportData  Pointer to a buffer where the created report should be stored
- *  \param[out]    ReportSize  Number of bytes written in the report (or zero if no report is to be sent)
- *
- *  \return Boolean \c true to force the sending of the report, \c false to let the library determine if it needs to be sent
+/*
+ * Create HID report callback function
+ * HIDInterfaceInfo is the interface info (same as initialised at top of file) 
+ * ReportID is the ID requested by the host computer
+ * ReportData is a buffer which holds the report that should be created
+ * ReportSize is an integer pointer which holds the size of the created report
  */
 bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo,
 					 uint8_t* const ReportID,
@@ -111,19 +109,11 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
 	return true;
 }
 
-/** HID class driver callback function for the processing of HID reports from the host.
- *
- *  \param[in] HIDInterfaceInfo  Pointer to the HID class interface configuration structure being referenced
- *  \param[in] ReportID    Report ID of the received report from the host
- *  \param[in] ReportType  The type of report that the host has sent, either HID_REPORT_ITEM_Out or HID_REPORT_ITEM_Feature
- *  \param[in] ReportData  Pointer to a buffer where the received report has been stored
- *  \param[in] ReportSize  Size in bytes of the received HID report
- */
+// Process received report callback function - not used as this application
+// acts as a device, not a host
 void CALLBACK_HID_Device_ProcessHIDReport(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo,
                                           const uint8_t ReportID,
                                           const uint8_t ReportType,
                                           const void* ReportData,
                                           const uint16_t ReportSize)
-{
-	// Unused (but mandatory for the HID class driver) in this demo, since there are no Host->Device reports
-}
+{ }
