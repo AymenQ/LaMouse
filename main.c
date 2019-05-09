@@ -44,6 +44,7 @@ int main(void) {
 
 	// Initialise USB hardware
 	USB_Init();
+	display_string("Please use the direction keys to move the mouse.\nCentre button to click.");
 	for(;;) {
 		HID_Device_USBTask(&Mouse_HID_Interface);
 		USB_USBTask();
